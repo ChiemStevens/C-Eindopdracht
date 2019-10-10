@@ -32,6 +32,8 @@ namespace Client
 
             HideHostGrid();
             ToolGrid.Visibility = Visibility.Hidden;
+            DrawGrid.Visibility = Visibility.Hidden;
+            GridWord.Visibility = Visibility.Hidden;
         }
 
         private void Canvas_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -106,6 +108,38 @@ namespace Client
             }));
         }
 
+        public void ShowDrawGrid()
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                DrawGrid.Visibility = Visibility.Visible;
+            }));
+        }
+
+        public void HideDrawGrid()
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                DrawGrid.Visibility = Visibility.Hidden;
+            }));
+        }
+
+        public void ShowWordGrid()
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                GridWord.Visibility = Visibility.Visible;
+            }));
+        }
+
+        public void HideWordGrid()
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                GridWord.Visibility = Visibility.Hidden;
+            }));
+        }
+
         public void SetRoomnameLabel(string name)
         {
             Application.Current.Dispatcher.Invoke(new Action(() =>
@@ -119,6 +153,18 @@ namespace Client
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
                 players.Content = "Players: " + size + "/8";
+            }));
+        }
+
+        public void SetWordSizeLabel(int wordSize)
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                lblWord.Content = "";
+                for(int i = 0; i <= wordSize; i++)
+                {
+                    lblWord.Content += "_ ";
+                }
             }));
         }
 
@@ -143,6 +189,25 @@ namespace Client
         private void btn_StartGame_Click(object sender, RoutedEventArgs e)
         {
             this.connector.StartGame();
+        }
+
+        private void btn_Send_Click(object sender, RoutedEventArgs e)
+        {
+            SendChatMessage();
+        }
+
+        private void chat_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+            {
+                SendChatMessage();
+            }
+        } 
+
+        private void SendChatMessage()
+        {
+            this.connector.SendGuessModel(chat.Text);
+            chat.Text = "";
         }
     }
 }

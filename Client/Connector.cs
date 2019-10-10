@@ -54,6 +54,11 @@ namespace Client
             this.sendMessage(new Message(MessageTypes.SendUsername, JsonConvert.SerializeObject(new ClientModel(username))));
         }
 
+        public void SendGuessModel(string guessedWord)
+        {
+            this.sendMessage(new Message(MessageTypes.GuessWord, JsonConvert.SerializeObject(new GuessModel(guessedWord))));
+        }
+
         public void StartGame()
         {
             this.sendMessage(new Message(MessageTypes.StartGame, ""));
@@ -95,6 +100,16 @@ namespace Client
                     RoomModel room = JsonConvert.DeserializeObject<RoomModel>(message.Data);
                     ClientHandler.GetInstance().SetRoomname(room.Name);
                     ClientHandler.GetInstance().SetRoomSize(room.AmountOfPlayers);
+                    break;
+                case MessageTypes.StartGame:
+                    GameModel gameModel = JsonConvert.DeserializeObject<GameModel>(message.Data);
+                    ClientHandler.GetInstance().SetWordSize(gameModel.LengthOfWord);
+                    break;
+                case MessageTypes.EndGame:
+                    EndGameModel endGameModel = JsonConvert.DeserializeObject<EndGameModel>(message.Data);
+                    //TODO: show winners
+                    //TODO: hide drawer and guessword grids
+                    //TODO: show host grid to host.
                     break;
                 default:
                     break;

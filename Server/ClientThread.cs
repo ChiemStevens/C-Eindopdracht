@@ -88,6 +88,9 @@ namespace Server
                             case MessageTypes.StartGame:
                                 this.room.StartGame();
                                 break;
+                            case MessageTypes.GuessWord:
+                                this.room.GuessWord(JsonConvert.DeserializeObject<GuessModel>(message.Data).Word, this);
+                                break;
                             default:
                                 break;
                         }
@@ -103,6 +106,7 @@ namespace Server
                 }
                 catch (IOException ex)
                 {
+                    Console.WriteLine(ex.Message);
                     this.StopClientThread();
                     return;
                 }

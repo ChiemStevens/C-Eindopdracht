@@ -8,11 +8,15 @@
         Title="MainWindow" Height="766.5" Width="1536.5"
         WindowStartupLocation="CenterScreen">
     <Grid>
-        <Canvas x:Name="paintSurface" HorizontalAlignment="Left" Height="663" Margin="10,10,0,0" VerticalAlignment="Top" Width="1264" MouseDown="Canvas_MouseDown" MouseMove="Canvas_MouseMove">
+        <Canvas x:Name="paintSurface" HorizontalAlignment="Left" Height="619" Margin="10,54,0,0" VerticalAlignment="Top" Width="1264" MouseDown="Canvas_MouseDown" MouseMove="Canvas_MouseMove">
             <Canvas.Background>
                 <SolidColorBrush Color="White"/>
             </Canvas.Background>
         </Canvas>
+
+        <Grid x:Name="GridWord" Margin="0,0,267,681">
+            <Label Name="lblWord" Margin="10,0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22" />
+        </Grid>
 
         <Grid Name="StartGrid">
             <TextBox Name="txtUsername" HorizontalAlignment="Center" TextAlignment="Center" FontSize="18" Height="51" TextWrapping="Wrap" Text="Username" VerticalAlignment="Center" Width="252"/>
@@ -35,14 +39,15 @@
             <TextBox Name="txtRoomName" Height="23" TextWrapping="Wrap" Text="roomname" Margin="10,68,10,643"/>
             <Button Name="btn_JoinRoom" Content="Join room" Click="Btn_JoinRoom_Click" Margin="10,96,10,581"/>
             <Label Name="currentRoom" Content="Current room: " HorizontalAlignment="Left" Margin="6,10,0,0" VerticalAlignment="Top"/>
-            <TextBox Name="chat" HorizontalAlignment="Left" Height="83" Margin="10,543,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="229"/>
-            <TextBox Name="chatBox" IsEnabled="False" HorizontalAlignment="Left" Height="258" Margin="10,279,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="229"/>
+            <TextBox Name="chat" HorizontalAlignment="Left" Height="39" Margin="10,543,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="148" KeyDown="chat_KeyDown"/>
+            <TextBox Name="chatBox" IsEnabled="False" HorizontalAlignment="Left" Height="296" Margin="10,241,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="229"/>
             <Label x:Name="players" Content="Players: " HorizontalAlignment="Left" Margin="6,38,0,0" VerticalAlignment="Top"/>
 
             <Grid x:Name="hostGrid" Margin="0,668,0,0">
                 <Button Name="btn_StartGame" Content="Start game" HorizontalAlignment="Left" Margin="67,10,0,0" VerticalAlignment="Top" Width="121" Height="46" Click="btn_StartGame_Click"/>
             </Grid>
             <Button x:Name="btn_Leaveroom" Content="Leave room" Margin="10,159,10,518" Click="btn_Leaveroom_Click"/>
+            <Button Name="btn_Send" Content="Send" HorizontalAlignment="Left" Margin="163,543,0,0" VerticalAlignment="Top" Width="76" Height="39" Click="btn_Send_Click"/>
         </Grid>
     </Grid>
 </Window>

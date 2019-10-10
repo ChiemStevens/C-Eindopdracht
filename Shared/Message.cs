@@ -42,6 +42,9 @@ namespace Shared
         NewHost,
         SendUsername,
         AmountOfPlayers,
-        StartGame
+        StartGame,
+        GuessWord,
+        EndGame,
+        NewRound
     }
 }

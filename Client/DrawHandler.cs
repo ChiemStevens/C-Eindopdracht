@@ -37,6 +37,11 @@ namespace Client
             mainWindow.SetRoomsizeLabel(roomSize);
         }
 
+        public void SetWordSizeLabel(int wordSize)
+        {
+            mainWindow.SetWordSizeLabel(wordSize);
+        }
+
         public void CheckDrawer(ClientModel client)
         {
             if(initialized)
@@ -44,10 +49,12 @@ namespace Client
                 if (client.Name == ClientHandler.GetInstance().Name)
                 {
                     this.canDraw = true;
+                    this.mainWindow.ShowDrawGrid();
                 }
                 else
                 {
                     this.canDraw = false;
+                    this.mainWindow.HideDrawGrid();
                 }
             }
         }
@@ -73,6 +80,22 @@ namespace Client
             if(initialized)
             {
                 mainWindow.HideHostGrid();
+            }
+        }
+
+        public void ShowWordGrid()
+        {
+            if (initialized)
+            {
+                mainWindow.ShowWordGrid();
+            }
+        }
+
+        public void HideWordGrid()
+        {
+            if (initialized)
+            {
+                mainWindow.HideWordGrid();
             }
         }
 

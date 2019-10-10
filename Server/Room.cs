@@ -14,11 +14,13 @@ namespace Server
 
         private ClientThread host;
         private ClientThread drawer;
+        private GameHandler gameHandler;
 
         public Room(Server server, string roomname)
         {
             this.server = server;
             this.roomname = roomname;
+            this.gameHandler = new GameHandler(3, this);
             clients = new List<ClientThread>();
         }
 
@@ -88,12 +90,20 @@ namespace Server
             }
         }
 
+        public void GuessWord(string word, ClientThread client)
+        {
+            this.gameHandler.GuessWord(word, client.Name);
+        }
+
         public void StartGame()
         {
             if(this.clients.Count > 1)
             {
 
             }
+
+            this.gameHandler.StartGame(clients);
+            this.SendToAllClientsInRoom(new Message(MessageTypes.StartGame, JsonConvert.SerializeObject(new GameModel(gameHandler.Word.Length))));
         }
 
         private void MakeHost(ClientThread clientThread)

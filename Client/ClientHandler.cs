@@ -15,6 +15,7 @@ namespace Client
         private bool isHost;
         private string roomName;
         private int roomSize;
+        private int wordSize;
 
         private ClientHandler()
         {
@@ -36,6 +37,13 @@ namespace Client
         {
             this.roomSize = roomSize;
             DrawHandler.GetInstance().SetRoomSizeLabel(roomSize);
+        }
+
+        public void SetWordSize(int wordSize)
+        {
+            this.wordSize = wordSize;
+            DrawHandler.GetInstance().SetWordSizeLabel(wordSize);
+            DrawHandler.GetInstance().ShowWordGrid();
         }
 
         public void SetHost(ClientModel clientModel)
