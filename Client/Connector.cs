@@ -15,15 +15,11 @@ namespace Client
         private TcpClient client;
         private NetworkStream stream;
 
-        private MainWindow tempMainWindow;
-
         /// <summary>
         /// Makes connection to the draw server and saves the connection in the client and stream variable. 
         /// </summary>
-        public  Connector(MainWindow mainWindow)
+        public Connector()
         {
-            this.tempMainWindow = mainWindow;
-
             client = new System.Net.Sockets.TcpClient("127.0.0.1", 1234); // Create a new connection
             stream = client.GetStream();
 
@@ -45,7 +41,22 @@ namespace Client
 
         public void SendRoomName(string roomname)
         {
-            this.sendMessage(new Message(MessageTypes.JoinRoom, JsonConvert.SerializeObject(new RoomModel(roomname))));
+            this.sendMessage(new Message(MessageTypes.JoinRoom, JsonConvert.SerializeObject(new RoomModel(roomname, 0))));
+        }
+
+        public void LeaveRoom()
+        {
+            this.sendMessage(new Message(MessageTypes.LeaveRoom, JsonConvert.SerializeObject(new RoomModel(ClientHandler.GetInstance().Roomname, 0))));
+        }
+
+        public void SendUserName(string username)
+        {
+            this.sendMessage(new Message(MessageTypes.SendUsername, JsonConvert.SerializeObject(new ClientModel(username))));
+        }
+
+        public void StartGame()
+        {
+            this.sendMessage(new Message(MessageTypes.StartGame, ""));
         }
 
         /// <summary>
@@ -68,11 +79,25 @@ namespace Client
             stream.Read(buffer, 0, buffer.Length);
             Message message = JsonConvert.DeserializeObject<Message>(Encoding.Unicode.GetString(buffer));
 
-            if(message.Type == MessageTypes.SendDrawing)
+            switch(message.Type)
             {
-                DrawPoint drawPoint = JsonConvert.DeserializeObject<DrawPoint>(message.Data);
-                this.tempMainWindow.DrawLine(drawPoint);
-                //Console.WriteLine(Message.GetJsonString(message));
+                case MessageTypes.SendDrawing:
+                    DrawPoint drawPoint = JsonConvert.DeserializeObject<DrawPoint>(message.Data);
+                    DrawHandler.GetInstance().DrawLine(drawPoint);
+                    break;
+                case MessageTypes.NewDrawer:
+                    DrawHandler.GetInstance().CheckDrawer(JsonConvert.DeserializeObject<ClientModel>(message.Data));
+                    break;
+                case MessageTypes.NewHost:
+                    ClientHandler.GetInstance().SetHost(JsonConvert.DeserializeObject<ClientModel>(message.Data));
+                    break;
+                case MessageTypes.JoinRoom:
+                    RoomModel room = JsonConvert.DeserializeObject<RoomModel>(message.Data);
+                    ClientHandler.GetInstance().SetRoomname(room.Name);
+                    ClientHandler.GetInstance().SetRoomSize(room.AmountOfPlayers);
+                    break;
+                default:
+                    break;
             }
 
             this.ReadMessage();

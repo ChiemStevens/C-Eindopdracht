@@ -5,14 +5,44 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="766.5" Width="1536.5"
+        WindowStartupLocation="CenterScreen">
     <Grid>
-        <Canvas x:Name="paintSurface" HorizontalAlignment="Left" Height="399" Margin="10,10,0,0" VerticalAlignment="Top" Width="772" MouseDown="Canvas_MouseDown" MouseMove="Canvas_MouseMove">
+        <Canvas x:Name="paintSurface" HorizontalAlignment="Left" Height="663" Margin="10,10,0,0" VerticalAlignment="Top" Width="1264" MouseDown="Canvas_MouseDown" MouseMove="Canvas_MouseMove">
             <Canvas.Background>
                 <SolidColorBrush Color="White"/>
             </Canvas.Background>
-            <TextBox Name="txtRoomName" Height="23" Canvas.Left="642" TextWrapping="Wrap" Text="roomname" Canvas.Top="10" Width="120"/>
-            <Button Name="btn_JoinRoom" Content="Join room" Canvas.Left="687" Canvas.Top="38" Width="75" Click="Btn_JoinRoom_Click"/>
         </Canvas>
+
+        <Grid Name="StartGrid">
+            <TextBox Name="txtUsername" HorizontalAlignment="Center" TextAlignment="Center" FontSize="18" Height="51" TextWrapping="Wrap" Text="Username" VerticalAlignment="Center" Width="252"/>
+            <Button Name="btnEnterGame" Content="Enter game" HorizontalAlignment="Center" Margin="0,110,0,0" VerticalAlignment="Center" Width="116" Height="41" Click="btnEnterGame_Click"/>
+        </Grid>
+
+        <Grid x:Name="DrawGrid" Margin="0,673,0,0">
+            <Button Background="Blue" Margin="0,0,1458,0" />
+            <Button Background="Yellow" Margin="75,0,1383,0"/>
+            <Button Background="Red" Margin="150,0,1308,0"/>
+            <Button Background="Green" Margin="225,0,1233,0"/>
+            <Button Background="Purple" Margin="300,0,1158,0"/>
+            <Button Background="Orange" Margin="375,0,1083,0"/>
+            <Button Background="Black" Margin="450,0,1008,0"/>
+            <Button Background="White" Margin="525,0,933,0"/>
+            <ComboBox Name="pencilThickness" HorizontalAlignment="Left" Margin="647,10,0,0" VerticalAlignment="Top" Width="82" Height="42"/>
+        </Grid>
+
+        <Grid Name="ToolGrid" Margin="1279,0,0,0">
+            <TextBox Name="txtRoomName" Height="23" TextWrapping="Wrap" Text="roomname" Margin="10,68,10,643"/>
+            <Button Name="btn_JoinRoom" Content="Join room" Click="Btn_JoinRoom_Click" Margin="10,96,10,581"/>
+            <Label Name="currentRoom" Content="Current room: " HorizontalAlignment="Left" Margin="6,10,0,0" VerticalAlignment="Top"/>
+            <TextBox Name="chat" HorizontalAlignment="Left" Height="83" Margin="10,543,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="229"/>
+            <TextBox Name="chatBox" IsEnabled="False" HorizontalAlignment="Left" Height="258" Margin="10,279,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="229"/>
+            <Label x:Name="players" Content="Players: " HorizontalAlignment="Left" Margin="6,38,0,0" VerticalAlignment="Top"/>
+
+            <Grid x:Name="hostGrid" Margin="0,668,0,0">
+                <Button Name="btn_StartGame" Content="Start game" HorizontalAlignment="Left" Margin="67,10,0,0" VerticalAlignment="Top" Width="121" Height="46" Click="btn_StartGame_Click"/>
+            </Grid>
+            <Button x:Name="btn_Leaveroom" Content="Leave room" Margin="10,159,10,518" Click="btn_Leaveroom_Click"/>
+        </Grid>
     </Grid>
 </Window>

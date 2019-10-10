@@ -73,17 +73,20 @@ namespace Server
 
                         switch (message.Type)
                         {
-                            case MessageTypes.Authorize:
-                                break;
-                            case MessageTypes.Inform:
-                                break;
                             case MessageTypes.JoinRoom:
                                 JoinOtherRoom(message);
                                 break;
                             case MessageTypes.LeaveRoom:
+                                this.LeaveRoom(JsonConvert.DeserializeObject<RoomModel>(message.Data));
                                 break;
                             case MessageTypes.SendDrawing:
                                 this.room.SendToAllClientsInRoom(message);
+                                break;
+                            case MessageTypes.SendUsername:
+                                this.name = JsonConvert.DeserializeObject<ClientModel>(message.Data).Name;
+                                break;
+                            case MessageTypes.StartGame:
+                                this.room.StartGame();
                                 break;
                             default:
                                 break;
@@ -93,13 +96,10 @@ namespace Server
                     {
                         Console.WriteLine(ex.Message);
                     }
-                    
+
 
                     //Clear the buffer
-                    for(int i = 0; i < buffer.Length; i++)
-                    {
-                        buffer[i] = 0;
-                    }
+                    buffer = new byte[BYTE_SIZE];
                 }
                 catch (IOException ex)
                 {
@@ -109,10 +109,20 @@ namespace Server
             }
         }
 
+        private void LeaveRoom(RoomModel roomModel)
+        {
+            if(this.room.Name == roomModel.Name)
+            {
+                this.room.LeaveRoom(this);
+            }
+        }
+
         private void JoinOtherRoom(Message message)
         {
             RoomModel roomModel = JsonConvert.DeserializeObject<RoomModel>(message.Data);
             this.room.JoinOtherRoom(this, roomModel.Name);
         }
+
+        public string Name { get { return this.name; } }
     }
 }

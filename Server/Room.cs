@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using Newtonsoft.Json;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -44,10 +45,14 @@ namespace Server
         public void AddClient(ClientThread clientThread)
         {
             clients.Add(clientThread);
+            clientThread.SendMessage(new Message(MessageTypes.JoinRoom, JsonConvert.SerializeObject(new RoomModel(this.Name, this.clients.Count))));
 
-            if(clients.Count == 1)
+            if(this.Name.ToLower() != "hub")
             {
-                host = clientThread;
+                if (clients.Count == 1)
+                {
+                    this.MakeHost(clientThread);
+                }
             }
         }
 
@@ -59,7 +64,7 @@ namespace Server
             {
                 if(clients.Count > 0)
                 {
-                    host = clients[0];
+                    this.MakeHost(clients[0]);
                 }
                 else
                 {
@@ -68,12 +73,50 @@ namespace Server
             }
         }
 
+        public void LeaveRoom(ClientThread clientThread)
+        {
+            server.JoinRoom(clientThread, this, "hub");
+        }
+
+        public void SendNewDrawer(ClientModel clientModel)
+        {
+            Message message = new Message(MessageTypes.NewDrawer, JsonConvert.SerializeObject(clientModel));
+
+            foreach(ClientThread client in clients)
+            {
+                client.SendMessage(message);
+            }
+        }
+
+        public void StartGame()
+        {
+            if(this.clients.Count > 1)
+            {
+
+            }
+        }
+
+        private void MakeHost(ClientThread clientThread)
+        {
+            this.host = clientThread;
+            clientThread.SendMessage(new Message(MessageTypes.NewHost, JsonConvert.SerializeObject(new ClientModel(clientThread.Name))));
+        }
+
         private void DestroyRoom()
         {
-            if(clients.Count <= 0)
+            if(this.Name.ToLower() != "hub")
             {
-                server.DestroyRoom(this);
+                if (clients.Count <= 0)
+                {
+                   
+                    server.DestroyRoom(this);
+                }
             }
+        }
+
+        private void SetDrawer(ClientThread clientThread)
+        {
+            this.drawer = clientThread;
         }
 
         public string Name { get { return roomname; } }

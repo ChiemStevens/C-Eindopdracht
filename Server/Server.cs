@@ -12,6 +12,7 @@ namespace Server
         private IPEndPoint iPEndPoint;
         private TcpListener listener;
         private List<Room> rooms = new List<Room>();
+        private List<Room> roomsToDestory = new List<Room>();
         private Room hub;
 
         public Server()
@@ -23,6 +24,7 @@ namespace Server
             Console.WriteLine(@"Started listening requests at: {0}:{1}", iPEndPoint.Address, iPEndPoint.Port);
 
             hub = new Room(this, "hub");
+            rooms.Add(hub);
         }
 
         public void Start()
@@ -70,6 +72,8 @@ namespace Server
                         clientThread.JoinRoom(room);
                     }
                 }
+
+                DestoryRooms();
             }
         }
 
@@ -87,7 +91,18 @@ namespace Server
 
         public void DestroyRoom(Room room)
         {
-            if(RoomExists(room.Name))
+            if(room.Name.ToLower() != "hub")
+            {
+                if (RoomExists(room.Name))
+                {
+                    roomsToDestory.Add(room);
+                }
+            }
+        }
+
+        private void DestoryRooms()
+        {
+            foreach(Room room in roomsToDestory)
             {
                 rooms.Remove(room);
             }

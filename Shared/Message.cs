@@ -37,6 +37,11 @@ namespace Shared
         Inform,
         SendDrawing,
         JoinRoom,
-        LeaveRoom
+        LeaveRoom,
+        NewDrawer,
+        NewHost,
+        SendUsername,
+        AmountOfPlayers,
+        StartGame
     }
 }

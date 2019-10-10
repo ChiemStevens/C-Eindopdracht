@@ -19,37 +19,55 @@ namespace Client
         public MainWindow()
         {
             InitializeComponent();
-            this.connector = new Connector(this);
+
+            pencilThickness.Items.Add("1");
+            pencilThickness.Items.Add("2");
+            pencilThickness.Items.Add("3");
+            pencilThickness.Items.Add("4");
+            pencilThickness.SelectedItem = "1";
+
+            this.connector = new Connector();
+
+            DrawHandler.GetInstance().Initialize(this);
+
+            HideHostGrid();
+            ToolGrid.Visibility = Visibility.Hidden;
         }
 
         private void Canvas_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            if (e.ButtonState == MouseButtonState.Pressed)
-                currentPoint = e.GetPosition(this);
+            if(DrawHandler.GetInstance().CanDraw)
+            {
+                if (e.ButtonState == MouseButtonState.Pressed)
+                    currentPoint = e.GetPosition(this);
+            }
         }
 
         private void Canvas_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed)
+            if(DrawHandler.GetInstance().CanDraw)
             {
-                Line line = new Line();
+                if (e.LeftButton == MouseButtonState.Pressed)
+                {
+                    Line line = new Line();
 
-                SolidColorBrush redBrush = new SolidColorBrush();
-                redBrush.Color = Colors.Black;
-                line.Stroke = redBrush;
+                    SolidColorBrush redBrush = new SolidColorBrush();
+                    redBrush.Color = Colors.Black;
+                    line.Stroke = redBrush;
 
-                line.StrokeThickness = 1;
-                line.X1 = currentPoint.X;
-                line.Y1 = currentPoint.Y;
-                line.X2 = e.GetPosition(this).X;
-                line.Y2 = e.GetPosition(this).Y;
+                    line.StrokeThickness = 1;
+                    line.X1 = currentPoint.X;
+                    line.Y1 = currentPoint.Y;
+                    line.X2 = e.GetPosition(this).X;
+                    line.Y2 = e.GetPosition(this).Y;
 
-                currentPoint = e.GetPosition(this);
+                    currentPoint = e.GetPosition(this);
 
-                DrawPoint drawpoint = DrawPoint.CreatePointFromLine(line, Colors.Black);
-                this.connector.SendDrawPoint(drawpoint);
+                    DrawPoint drawpoint = DrawPoint.CreatePointFromLine(line, Colors.Black);
+                    this.connector.SendDrawPoint(drawpoint);
 
-                paintSurface.Children.Add(line);
+                    paintSurface.Children.Add(line);
+                }
             }
         }
 
@@ -72,9 +90,59 @@ namespace Client
             }));
         }
 
+        public void ShowHostGrid()
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                hostGrid.Visibility = Visibility.Visible;
+            }));
+        }
+
+        public void HideHostGrid()
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                hostGrid.Visibility = Visibility.Hidden;
+            }));
+        }
+
+        public void SetRoomnameLabel(string name)
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                currentRoom.Content = "Current room: " + name;
+            }));
+        }
+
+        public void SetRoomsizeLabel(int size)
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                players.Content = "Players: " + size + "/8";
+            }));
+        }
+
         private void Btn_JoinRoom_Click(object sender, RoutedEventArgs e)
         {
             this.connector.SendRoomName(txtRoomName.Text);
+        }
+
+        private void btnEnterGame_Click(object sender, RoutedEventArgs e)
+        {
+            ClientHandler.GetInstance().SetName(txtUsername.Text);
+            connector.SendUserName(txtUsername.Text);
+            StartGrid.Visibility = Visibility.Hidden;
+            ToolGrid.Visibility = Visibility.Visible;
+        }
+
+        private void btn_Leaveroom_Click(object sender, RoutedEventArgs e)
+        {
+            this.connector.LeaveRoom();
+        }
+
+        private void btn_StartGame_Click(object sender, RoutedEventArgs e)
+        {
+            this.connector.StartGame();
         }
     }
 }
