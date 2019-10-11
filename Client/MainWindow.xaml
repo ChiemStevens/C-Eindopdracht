@@ -50,5 +50,16 @@
             <Button x:Name="btn_Leaveroom" Content="Leave room" Margin="10,159,10,518" Click="btn_Leaveroom_Click"/>
             <Button Name="btn_Send" Content="Send" HorizontalAlignment="Left" Margin="163,543,0,0" VerticalAlignment="Top" Width="76" Height="39" Click="btn_Send_Click"/>
         </Grid>
+
+        <Grid x:Name="winningGrid" HorizontalAlignment="Center" VerticalAlignment="Center" Height="220" Margin="468,262,460,253" Width="600">
+            <Label Name="lblFirst" Content="Winner: " HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="238"/>
+            <Label Name="lblSecond" Content="2nd: " HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top" Width="238"/>
+            <Label Name="lblThid" Content="3th: " HorizontalAlignment="Left" Margin="10,72,0,0" VerticalAlignment="Top" Width="238"/>
+            <Label Name="lblFourth" Content="4th: " HorizontalAlignment="Left" Margin="10,103,0,0" VerticalAlignment="Top" Width="238"/>
+            <Label Name="lblFifth" Content="5th: " HorizontalAlignment="Left" VerticalAlignment="Top" Width="238" Margin="352,10,0,0"/>
+            <Label Name="lblSixth" Content="6th: " HorizontalAlignment="Left" VerticalAlignment="Top" Width="238" Margin="352,41,0,0"/>
+            <Label Name="lblSeventh" Content="7th: " HorizontalAlignment="Left" VerticalAlignment="Top" Width="238" Margin="352,72,0,0"/>
+            <Label Name="lblEigth" Content="8th: " HorizontalAlignment="Left" VerticalAlignment="Top" Width="238" Margin="352,103,0,0"/>
+        </Grid>
     </Grid>
 </Window>

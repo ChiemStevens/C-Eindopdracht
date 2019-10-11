@@ -86,6 +86,16 @@ namespace Client
             }
         }
 
+        public void ShowDrawGrid()
+        {
+            this.mainWindow.ShowDrawGrid();
+        }
+
+        public void HideDrawGrid()
+        {
+            this.mainWindow.HideDrawGrid();
+        }
+
         public void DrawLine(DrawPoint drawPoint)
         {
             if(initialized)
@@ -134,6 +144,12 @@ namespace Client
             }
         }
 
+        public void ShowWinners(EndGameModel endGameModel)
+        {
+            mainWindow.FillWiningGrid(endGameModel);
+            mainWindow.ShowWinningGrid();
+        }
+
         public static DrawHandler GetInstance()
         {
             if(instance == null)
@@ -143,7 +159,7 @@ namespace Client
             return instance;
         }
 
-        public bool CanDraw { get { return canDraw; } }
+        public bool CanDraw { get { return canDraw; } set { canDraw = value; } }
 
         public Color Color { get { return color; } }
     }

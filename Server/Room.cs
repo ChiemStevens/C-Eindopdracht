@@ -83,7 +83,13 @@ namespace Server
                 else
                 {
                     this.DestroyRoom();
+                    return;
                 }
+            }
+
+            if(clientThread == drawer)
+            {
+                gameHandler.NewRound();
             }
         }
 

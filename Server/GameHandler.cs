@@ -73,17 +73,7 @@ namespace Server
                     }
                     else
                     {
-                        Console.WriteLine("New round");
-                        //New round
-                        currentRoundNumber++;
-                        usersGuessedCorrect.Clear();
-                        ReadWordsAndChoice();
-                        this.gameRoom.NextDrawer();
-
-                        List<Message> messages = new List<Message>();
-                        messages.Add(new Message(MessageTypes.GuessWord, JsonConvert.SerializeObject(new GuessModel(this.Word))));
-                        messages.Add(new Message(MessageTypes.NewRound, JsonConvert.SerializeObject(new GameModel(this.Word.Length, currentRoundNumber))));
-                        this.gameRoom.SendToAllClientsInRoom(messages);
+                        NewRound();
                     }
                 }
 
@@ -92,6 +82,21 @@ namespace Server
 
             this.gameRoom.SendToAllClientsInRoom(new Message(MessageTypes.Inform, JsonConvert.SerializeObject(new GuessModel(clientName + ": " + word))));
             return false;
+        }
+
+        public void NewRound()
+        {
+            Console.WriteLine("New round");
+            //New round
+            currentRoundNumber++;
+            usersGuessedCorrect.Clear();
+            ReadWordsAndChoice();
+            this.gameRoom.NextDrawer();
+
+            List<Message> messages = new List<Message>();
+            messages.Add(new Message(MessageTypes.GuessWord, JsonConvert.SerializeObject(new GuessModel(this.Word))));
+            messages.Add(new Message(MessageTypes.NewRound, JsonConvert.SerializeObject(new GameModel(this.Word.Length, currentRoundNumber))));
+            this.gameRoom.SendToAllClientsInRoom(messages);
         }
 
         private void ReadWordsAndChoice()

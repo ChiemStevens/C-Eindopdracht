@@ -5,7 +5,9 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using Shared;
 using System;
+using System.Linq;
 using System.Windows.Controls;
+using System.Collections.Generic;
 
 namespace Client
 {
@@ -35,6 +37,7 @@ namespace Client
             ToolGrid.Visibility = Visibility.Hidden;
             DrawGrid.Visibility = Visibility.Hidden;
             GridWord.Visibility = Visibility.Hidden;
+            winningGrid.Visibility = Visibility.Hidden;
         }
 
         private void Canvas_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -113,6 +116,7 @@ namespace Client
         {
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
+                chat.IsEnabled = false;
                 DrawGrid.Visibility = Visibility.Visible;
             }));
         }
@@ -121,6 +125,7 @@ namespace Client
         {
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
+                chat.IsEnabled = true;
                 DrawGrid.Visibility = Visibility.Hidden;
             }));
         }
@@ -191,6 +196,104 @@ namespace Client
             {
                 lblRounds.Content = "Ronde: " + currentRound + "/ 3"; 
             }));
+        }
+
+        public void ShowWinningGrid()
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                winningGrid.Visibility = Visibility.Visible;
+            }));
+        }
+
+        public void HidewinningGrid()
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                winningGrid.Visibility = Visibility.Hidden;
+            }));
+        }
+
+        public void FillWiningGrid(EndGameModel endGameModel)
+        {
+            int counter = 1;
+            Dictionary<string, int> sortedDictionary = endGameModel.Winners.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+            foreach (KeyValuePair<string, int> item in sortedDictionary)
+            {
+                Application.Current.Dispatcher.Invoke(new Action(() =>
+                {
+                    switch(counter)
+                    {
+                        case 1:
+                            lblFirst.Content = string.Format("1st: {0} {1} points", item.Key, item.Value);
+                            break;
+                        case 2:
+                            lblSecond.Content = string.Format("2nd: {0} {1} points", item.Key, item.Value);
+                            break;
+                        case 3:
+                            lblThid.Content = string.Format("3rd: {0} {1} points", item.Key, item.Value);
+                            break;
+                        case 4:
+                            lblFourth.Content = string.Format("4rt: {0} {1} points", item.Key, item.Value);
+                            break;
+                        case 5:
+                            lblFifth.Content = string.Format("5th: {0} {1} points", item.Key, item.Value);
+                            break;
+                        case 6:
+                            lblSixth.Content = string.Format("6th: {0} {1} points", item.Key, item.Value);
+                            break;
+                        case 7:
+                            lblSeventh.Content = string.Format("7th: {0} {1} points", item.Key, item.Value);
+                            break;
+                        case 8:
+                            lblEigth.Content = string.Format("8th: {0} {1} points", item.Key, item.Value);
+                            break;
+                        default:
+                            break;
+                    }
+
+                    counter++;
+                }));
+            }
+
+            if(counter < 8)
+            {
+                for (int i = counter; i <= 8; i++)
+                {
+                    Application.Current.Dispatcher.Invoke(new Action(() =>
+                    {
+                        switch (i)
+                        {
+                            case 1:
+                                lblFirst.Content = "";
+                                break;
+                            case 2:
+                                lblSecond.Content = "";
+                                break;
+                            case 3:
+                                lblThid.Content = "";
+                                break;
+                            case 4:
+                                lblFourth.Content = "";
+                                break;
+                            case 5:
+                                lblFifth.Content = "";
+                                break;
+                            case 6:
+                                lblSixth.Content = "";
+                                break;
+                            case 7:
+                                lblSeventh.Content = "";
+                                break;
+                            case 8:
+                                lblEigth.Content = "";
+                                break;
+                            default:
+                                break;
+                        }
+                    }));
+                }
+            }
         }
 
         private void Btn_JoinRoom_Click(object sender, RoutedEventArgs e)

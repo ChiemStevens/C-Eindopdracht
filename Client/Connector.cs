@@ -46,6 +46,7 @@ namespace Client
 
         public void LeaveRoom()
         {
+            ClientHandler.GetInstance().LeaveRoom();
             this.sendMessage(new Message(MessageTypes.LeaveRoom, JsonConvert.SerializeObject(new RoomModel(ClientHandler.GetInstance().Roomname, 0))));
         }
 
@@ -119,12 +120,12 @@ namespace Client
                         GameModel gameModel = JsonConvert.DeserializeObject<GameModel>(message.Data);
                         ClientHandler.GetInstance().SetWordSize(gameModel.LengthOfWord);
                         ClientHandler.GetInstance().SetRoundLabel(gameModel.CurrentRound);
+                        DrawHandler.GetInstance().HideHostGrid();
                         break;
                     case MessageTypes.EndGame:
                         EndGameModel endGameModel = JsonConvert.DeserializeObject<EndGameModel>(message.Data);
-                        //TODO: show winners
-                        //TODO: hide drawer and guessword grids
-                        //TODO: show host grid to host.
+                        ClientHandler.GetInstance().ShowWinners(endGameModel);
+                        ClientHandler.GetInstance().EndGame();
                         break;
                     case MessageTypes.GuessWord:
                         ClientHandler.GetInstance().SetWord(JsonConvert.DeserializeObject<GuessModel>(message.Data).Word);

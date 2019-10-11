@@ -70,6 +70,27 @@ namespace Client
             }
         }
 
+        public void ShowWinners(EndGameModel endGameModel)
+        {
+            DrawHandler.GetInstance().ShowWinners(endGameModel);
+        }
+
+        public void LeaveRoom()
+        {
+            this.isHost = false;
+            DrawHandler.GetInstance().CanDraw = false;
+        }
+
+        public void EndGame()
+        {
+            DrawHandler.GetInstance().HideWordGrid();
+            DrawHandler.GetInstance().HideDrawGrid();
+            if(this.isHost)
+            {
+                DrawHandler.GetInstance().ShowHostGrid();
+            }
+        }
+
         public static ClientHandler GetInstance()
         {
             if(instance == null)
