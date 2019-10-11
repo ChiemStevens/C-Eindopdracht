@@ -89,7 +89,14 @@ namespace Server
 
             if(clientThread == drawer)
             {
-                gameHandler.NewRound();
+                if(clients.Count == 1)
+                {
+                    gameHandler.EndGame();
+                }
+                else
+                {
+                    gameHandler.NewRound();
+                }
             }
         }
 

@@ -20,7 +20,8 @@ namespace Client
         /// </summary>
         public Connector()
         {
-            client = new System.Net.Sockets.TcpClient("127.0.0.1", 1234); // Create a new connection
+           // client = new System.Net.Sockets.TcpClient("86.82.166.205", 12242); // Create a new connection
+            client = new System.Net.Sockets.TcpClient("127.0.0.1", 12242); // Create a new connection
             stream = client.GetStream();
 
             Message message = new Message(MessageTypes.Inform, "Hello There!");

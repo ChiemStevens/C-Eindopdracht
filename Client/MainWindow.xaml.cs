@@ -317,6 +317,7 @@ namespace Client
 
         private void btn_Leaveroom_Click(object sender, RoutedEventArgs e)
         {
+            
             this.connector.LeaveRoom();
         }
 

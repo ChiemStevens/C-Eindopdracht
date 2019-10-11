@@ -17,7 +17,7 @@ namespace Server
 
         public Server()
         {
-            this. iPEndPoint = new IPEndPoint(IPAddress.Loopback, 1234);
+            this.iPEndPoint = new IPEndPoint(IPAddress.Any, 12242);
             this.listener = new TcpListener(iPEndPoint);
             this.listener.Start();
 

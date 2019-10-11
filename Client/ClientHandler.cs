@@ -78,6 +78,9 @@ namespace Client
         public void LeaveRoom()
         {
             this.isHost = false;
+            DrawHandler.GetInstance().HideHostGrid();
+            DrawHandler.GetInstance().HideDrawGrid();
+            DrawHandler.GetInstance().HideWordGrid();
             DrawHandler.GetInstance().CanDraw = false;
         }
 
