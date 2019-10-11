@@ -82,38 +82,63 @@ namespace Client
         {
             byte[] buffer = new byte[1024];
             stream.Read(buffer, 0, buffer.Length);
-            Message message = JsonConvert.DeserializeObject<Message>(Encoding.Unicode.GetString(buffer));
 
-            switch(message.Type)
+            string wholePacket = Encoding.Unicode.GetString(buffer);
+            string stringMessage = wholePacket.Replace("\0", "");
+            string[] messages = stringMessage.Split(new string[] { Util.END_MESSAGE_KEY }, StringSplitOptions.None);
+            
+            for(int i = 0; i < messages.Length; i++)
             {
-                case MessageTypes.SendDrawing:
-                    DrawPoint drawPoint = JsonConvert.DeserializeObject<DrawPoint>(message.Data);
-                    DrawHandler.GetInstance().DrawLine(drawPoint);
-                    break;
-                case MessageTypes.NewDrawer:
-                    DrawHandler.GetInstance().CheckDrawer(JsonConvert.DeserializeObject<ClientModel>(message.Data));
-                    break;
-                case MessageTypes.NewHost:
-                    ClientHandler.GetInstance().SetHost(JsonConvert.DeserializeObject<ClientModel>(message.Data));
-                    break;
-                case MessageTypes.JoinRoom:
-                    RoomModel room = JsonConvert.DeserializeObject<RoomModel>(message.Data);
-                    ClientHandler.GetInstance().SetRoomname(room.Name);
-                    ClientHandler.GetInstance().SetRoomSize(room.AmountOfPlayers);
-                    break;
-                case MessageTypes.StartGame:
-                    GameModel gameModel = JsonConvert.DeserializeObject<GameModel>(message.Data);
-                    ClientHandler.GetInstance().SetWordSize(gameModel.LengthOfWord);
-                    break;
-                case MessageTypes.EndGame:
-                    EndGameModel endGameModel = JsonConvert.DeserializeObject<EndGameModel>(message.Data);
-                    //TODO: show winners
-                    //TODO: hide drawer and guessword grids
-                    //TODO: show host grid to host.
-                    break;
-                default:
-                    break;
+                if (messages[i] == "")
+                    continue;
+
+                Message message = JsonConvert.DeserializeObject<Message>(messages[i]);
+
+                switch (message.Type)
+                {
+                    case MessageTypes.Inform:
+                        GuessModel guessModel = JsonConvert.DeserializeObject<GuessModel>(message.Data);
+                        DrawHandler.GetInstance().WriteMessage(guessModel.Word);
+                        break;
+                    case MessageTypes.SendDrawing:
+                        DrawPoint drawPoint = JsonConvert.DeserializeObject<DrawPoint>(message.Data);
+                        DrawHandler.GetInstance().DrawLine(drawPoint);
+                        break;
+                    case MessageTypes.NewDrawer:
+                        DrawHandler.GetInstance().CheckDrawer(JsonConvert.DeserializeObject<ClientModel>(message.Data));
+                        break;
+                    case MessageTypes.NewHost:
+                        ClientHandler.GetInstance().SetHost(JsonConvert.DeserializeObject<ClientModel>(message.Data));
+                        break;
+                    case MessageTypes.JoinRoom:
+                        RoomModel room = JsonConvert.DeserializeObject<RoomModel>(message.Data);
+                        ClientHandler.GetInstance().SetRoomname(room.Name);
+                        ClientHandler.GetInstance().SetRoomSize(room.AmountOfPlayers);
+                        break;
+                    case MessageTypes.StartGame:
+                        GameModel gameModel = JsonConvert.DeserializeObject<GameModel>(message.Data);
+                        ClientHandler.GetInstance().SetWordSize(gameModel.LengthOfWord);
+                        ClientHandler.GetInstance().SetRoundLabel(gameModel.CurrentRound);
+                        break;
+                    case MessageTypes.EndGame:
+                        EndGameModel endGameModel = JsonConvert.DeserializeObject<EndGameModel>(message.Data);
+                        //TODO: show winners
+                        //TODO: hide drawer and guessword grids
+                        //TODO: show host grid to host.
+                        break;
+                    case MessageTypes.GuessWord:
+                        ClientHandler.GetInstance().SetWord(JsonConvert.DeserializeObject<GuessModel>(message.Data).Word);
+                        break;
+                    case MessageTypes.NewRound:
+                        gameModel = JsonConvert.DeserializeObject<GameModel>(message.Data);
+                        ClientHandler.GetInstance().SetWordSize(gameModel.LengthOfWord);
+                        ClientHandler.GetInstance().SetRoundLabel(gameModel.CurrentRound);
+                        break;
+                    default:
+                        break;
+                }
             }
+            
 
             this.ReadMessage();
         }
@@ -124,7 +149,8 @@ namespace Client
         /// <param name="messageBytes"></param>
         private void sendMessage(Message message)
         {
-            byte[] messageBytes = Encoding.Unicode.GetBytes(Message.GetJsonString(message));
+            string toSend = JsonConvert.SerializeObject(message) + Util.END_MESSAGE_KEY;
+            byte[] messageBytes = Encoding.Unicode.GetBytes(toSend);
 
             try
             {

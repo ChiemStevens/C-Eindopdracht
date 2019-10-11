@@ -14,12 +14,6 @@ namespace Shared
             this.data = data;
         }
 
-        public static string GetJsonString(Message message)
-        {
-            return JsonConvert.SerializeObject(message);
-        }
-
-
         public MessageTypes Type
         {
             get { return type; }

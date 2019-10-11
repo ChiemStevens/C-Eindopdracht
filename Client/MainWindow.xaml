@@ -16,6 +16,7 @@
 
         <Grid x:Name="GridWord" Margin="0,0,267,681">
             <Label Name="lblWord" Margin="10,0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22" />
+            <Label Name="lblRounds" FontSize="22" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="34" Width="151"/>
         </Grid>
 
         <Grid Name="StartGrid">
@@ -24,14 +25,14 @@
         </Grid>
 
         <Grid x:Name="DrawGrid" Margin="0,673,0,0">
-            <Button Background="Blue" Margin="0,0,1458,0" />
-            <Button Background="Yellow" Margin="75,0,1383,0"/>
-            <Button Background="Red" Margin="150,0,1308,0"/>
-            <Button Background="Green" Margin="225,0,1233,0"/>
-            <Button Background="Purple" Margin="300,0,1158,0"/>
-            <Button Background="Orange" Margin="375,0,1083,0"/>
-            <Button Background="Black" Margin="450,0,1008,0"/>
-            <Button Background="White" Margin="525,0,933,0"/>
+            <Button Background="Blue" Margin="0,0,1458,0" Click="btnColor_Click"/>
+            <Button Background="Yellow" Margin="75,0,1383,0" Click="btnColor_Click"/>
+            <Button Background="Red" Margin="150,0,1308,0" Click="btnColor_Click"/>
+            <Button Background="Green" Margin="225,0,1233,0" Click="btnColor_Click"/>
+            <Button Background="Purple" Margin="300,0,1158,0" Click="btnColor_Click"/>
+            <Button Background="Orange" Margin="375,0,1083,0" Click="btnColor_Click"/>
+            <Button Background="Black" Margin="450,0,1008,0" Click="btnColor_Click"/>
+            <Button Background="White" Margin="525,0,933,0" Click="btnColor_Click"/>
             <ComboBox Name="pencilThickness" HorizontalAlignment="Left" Margin="647,10,0,0" VerticalAlignment="Top" Width="82" Height="42"/>
         </Grid>
 

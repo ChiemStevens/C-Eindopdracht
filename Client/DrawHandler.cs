@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using Shared;
 
 namespace Client
@@ -14,11 +15,13 @@ namespace Client
         private MainWindow mainWindow;
         private bool initialized;
         private bool canDraw;
+        private Color color;
 
         private DrawHandler()
         {
             canDraw = false;
             initialized = false;
+            color = Colors.Black;
         }
 
         public void Initialize(MainWindow mainWindow)
@@ -37,9 +40,33 @@ namespace Client
             mainWindow.SetRoomsizeLabel(roomSize);
         }
 
+        public void SetRoundsLabel(int rounds)
+        {
+            mainWindow.SetRoundLabel(rounds);
+        }
+
         public void SetWordSizeLabel(int wordSize)
         {
-            mainWindow.SetWordSizeLabel(wordSize);
+            if(!this.canDraw)
+            {
+                mainWindow.SetWordSizeLabel(wordSize);
+            }
+        }
+
+        public void SetWord(string word)
+        {
+            if(this.canDraw)
+            {
+                mainWindow.SetWord(word);
+            }
+        }
+
+        public void SetColor(Color color)
+        {
+            if(this.canDraw)
+            {
+                this.color = color;
+            }
         }
 
         public void CheckDrawer(ClientModel client)
@@ -99,6 +126,14 @@ namespace Client
             }
         }
 
+        public void WriteMessage(string text)
+        {
+            if(initialized)
+            {
+                mainWindow.WriteChatMessage(text);
+            }
+        }
+
         public static DrawHandler GetInstance()
         {
             if(instance == null)
@@ -109,5 +144,7 @@ namespace Client
         }
 
         public bool CanDraw { get { return canDraw; } }
+
+        public Color Color { get { return color; } }
     }
 }

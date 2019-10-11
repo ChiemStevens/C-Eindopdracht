@@ -69,7 +69,6 @@ namespace Server
                     {
                         currentRoom.RemoveClient(clientThread);
                         room.AddClient(clientThread);
-                        clientThread.JoinRoom(room);
                     }
                 }
 

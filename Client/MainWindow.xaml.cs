@@ -5,6 +5,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using Shared;
 using System;
+using System.Windows.Controls;
 
 namespace Client
 {
@@ -53,9 +54,9 @@ namespace Client
                 {
                     Line line = new Line();
 
-                    SolidColorBrush redBrush = new SolidColorBrush();
-                    redBrush.Color = Colors.Black;
-                    line.Stroke = redBrush;
+                    SolidColorBrush brush = new SolidColorBrush();
+                    brush.Color = DrawHandler.GetInstance().Color;
+                    line.Stroke = brush;
 
                     line.StrokeThickness = 1;
                     line.X1 = currentPoint.X;
@@ -65,7 +66,7 @@ namespace Client
 
                     currentPoint = e.GetPosition(this);
 
-                    DrawPoint drawpoint = DrawPoint.CreatePointFromLine(line, Colors.Black);
+                    DrawPoint drawpoint = DrawPoint.CreatePointFromLine(line, DrawHandler.GetInstance().Color);
                     this.connector.SendDrawPoint(drawpoint);
 
                     paintSurface.Children.Add(line);
@@ -168,6 +169,30 @@ namespace Client
             }));
         }
 
+        public void SetWord(string word)
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                lblWord.Content = word;
+            }));
+        }
+
+        public void WriteChatMessage(string text)
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                chatBox.Text += text + "\r\n";
+            }));
+        }
+
+        public void SetRoundLabel(int currentRound)
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                lblRounds.Content = "Ronde: " + currentRound + "/ 3"; 
+            }));
+        }
+
         private void Btn_JoinRoom_Click(object sender, RoutedEventArgs e)
         {
             this.connector.SendRoomName(txtRoomName.Text);
@@ -179,6 +204,12 @@ namespace Client
             connector.SendUserName(txtUsername.Text);
             StartGrid.Visibility = Visibility.Hidden;
             ToolGrid.Visibility = Visibility.Visible;
+        }
+
+        private void btnColor_Click(object sender, RoutedEventArgs e)
+        {
+            SolidColorBrush buttonBrush = (SolidColorBrush) (sender as Button).Background;
+            DrawHandler.GetInstance().SetColor(buttonBrush.Color);
         }
 
         private void btn_Leaveroom_Click(object sender, RoutedEventArgs e)

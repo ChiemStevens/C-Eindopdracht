@@ -46,6 +46,16 @@ namespace Client
             DrawHandler.GetInstance().ShowWordGrid();
         }
 
+        public void SetRoundLabel(int rounds)
+        {
+            DrawHandler.GetInstance().SetRoundsLabel(rounds);
+        }
+
+        public void SetWord(string word)
+        {
+            DrawHandler.GetInstance().SetWord(word);
+        }
+
         public void SetHost(ClientModel clientModel)
         {
             if(this.name == clientModel.Name)

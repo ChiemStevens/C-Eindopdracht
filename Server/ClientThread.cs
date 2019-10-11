@@ -44,9 +44,22 @@ namespace Server
             this.threadRunning = false;
         }
 
+        public void SendMultiMessage(List<Message> messages)
+        {
+            string json = "";
+            foreach(Message message in messages)
+            {
+                json += JsonConvert.SerializeObject((message)) + Util.END_MESSAGE_KEY;
+            }
+
+            byte[] messageBytes = Encoding.Unicode.GetBytes(json);
+            this.networkStream.Write(messageBytes, 0, messageBytes.Length);
+        }
+
         public void SendMessage(Message message)
         {
-            byte[] messageBytes = Encoding.Unicode.GetBytes(Message.GetJsonString(message));
+            string toSend = JsonConvert.SerializeObject((message)) + Util.END_MESSAGE_KEY;
+            byte[] messageBytes = Encoding.Unicode.GetBytes(toSend);
             this.networkStream.Write(messageBytes, 0, messageBytes.Length);
         }
 
@@ -63,42 +76,51 @@ namespace Server
                 {
                     this.networkStream.Read(buffer, 0, buffer.Length);
 
-                    string stringMessage = Encoding.Unicode.GetString(buffer);
-                    stringMessage = stringMessage.Replace("\0", "");
+                    string wholePacket = Encoding.Unicode.GetString(buffer);
+                    string stringMessage = wholePacket.Replace("\0", "");
+                    string[] messages = stringMessage.Split(new string[] { Util.END_MESSAGE_KEY }, StringSplitOptions.None);
 
-                    try
+
+                    for(int i = 0; i < messages.Length; i++)
                     {
-                        Message message = JsonConvert.DeserializeObject<Message>(stringMessage);
-                        Console.WriteLine(message.Type);
-
-                        switch (message.Type)
+                        try
                         {
-                            case MessageTypes.JoinRoom:
-                                JoinOtherRoom(message);
-                                break;
-                            case MessageTypes.LeaveRoom:
-                                this.LeaveRoom(JsonConvert.DeserializeObject<RoomModel>(message.Data));
-                                break;
-                            case MessageTypes.SendDrawing:
-                                this.room.SendToAllClientsInRoom(message);
-                                break;
-                            case MessageTypes.SendUsername:
-                                this.name = JsonConvert.DeserializeObject<ClientModel>(message.Data).Name;
-                                break;
-                            case MessageTypes.StartGame:
-                                this.room.StartGame();
-                                break;
-                            case MessageTypes.GuessWord:
-                                this.room.GuessWord(JsonConvert.DeserializeObject<GuessModel>(message.Data).Word, this);
-                                break;
-                            default:
-                                break;
+                            if (messages[i] == "")
+                                continue;
+
+                            Message message = JsonConvert.DeserializeObject<Message>(messages[i]);
+                            Console.WriteLine(message.Type);
+
+                            switch (message.Type)
+                            {
+                                case MessageTypes.JoinRoom:
+                                    JoinOtherRoom(message);
+                                    break;
+                                case MessageTypes.LeaveRoom:
+                                    this.LeaveRoom(JsonConvert.DeserializeObject<RoomModel>(message.Data));
+                                    break;
+                                case MessageTypes.SendDrawing:
+                                    this.room.SendToAllClientsInRoom(message);
+                                    break;
+                                case MessageTypes.SendUsername:
+                                    this.name = JsonConvert.DeserializeObject<ClientModel>(message.Data).Name;
+                                    break;
+                                case MessageTypes.StartGame:
+                                    this.room.StartGame();
+                                    break;
+                                case MessageTypes.GuessWord:
+                                    this.room.GuessWord(JsonConvert.DeserializeObject<GuessModel>(message.Data).Word, this);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        catch (JsonException ex)
+                        {
+                            Console.WriteLine(ex.Message);
                         }
                     }
-                    catch(JsonException ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
+                    
 
 
                     //Clear the buffer

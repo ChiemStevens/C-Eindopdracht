@@ -51,15 +51,19 @@ namespace Server
             }
         }
 
-        public void GuessWord(string word, string clientName)
+        public bool GuessWord(string word, string clientName)
         {
             if(this.word.ToLower() == word.ToLower())
             {
+                this.gameRoom.SendToAllClientsInRoom(new Message(MessageTypes.Inform, JsonConvert.SerializeObject(new GuessModel(clientName + " guessed the word!"))));
+                
                 Console.WriteLine("Word Guessed by: " + clientName);
                 usersAndPoints[clientName] += usersAndPoints.Count - usersGuessedCorrect.Count;
                 usersGuessedCorrect.Add(clientName);
 
-                if(usersGuessedCorrect.Count == usersAndPoints.Count)
+                Console.WriteLine("User guessed correct: " + usersGuessedCorrect.Count);
+                Console.WriteLine("User and points: " + usersAndPoints.Count);
+                if(usersGuessedCorrect.Count == usersAndPoints.Count - 1)
                 {
                     if(currentRoundNumber == maxRounds)
                     {
@@ -74,10 +78,20 @@ namespace Server
                         currentRoundNumber++;
                         usersGuessedCorrect.Clear();
                         ReadWordsAndChoice();
-                        this.gameRoom.SendToAllClientsInRoom(new Message(MessageTypes.NewRound, JsonConvert.SerializeObject(new GameModel(word.Length))));
+                        this.gameRoom.NextDrawer();
+
+                        List<Message> messages = new List<Message>();
+                        messages.Add(new Message(MessageTypes.GuessWord, JsonConvert.SerializeObject(new GuessModel(this.Word))));
+                        messages.Add(new Message(MessageTypes.NewRound, JsonConvert.SerializeObject(new GameModel(this.Word.Length, currentRoundNumber))));
+                        this.gameRoom.SendToAllClientsInRoom(messages);
                     }
                 }
+
+                return true;
             }
+
+            this.gameRoom.SendToAllClientsInRoom(new Message(MessageTypes.Inform, JsonConvert.SerializeObject(new GuessModel(clientName + ": " + word))));
+            return false;
         }
 
         private void ReadWordsAndChoice()

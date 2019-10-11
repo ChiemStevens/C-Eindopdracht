@@ -16,12 +16,15 @@ namespace Server
         private ClientThread drawer;
         private GameHandler gameHandler;
 
+        private int currentDrawer; 
+
         public Room(Server server, string roomname)
         {
             this.server = server;
             this.roomname = roomname;
             this.gameHandler = new GameHandler(3, this);
             clients = new List<ClientThread>();
+            currentDrawer = 0;
         }
 
         public void JoinOtherRoom(ClientThread clientThread, string roomname)
@@ -44,10 +47,19 @@ namespace Server
             }
         }
 
+        public void SendToAllClientsInRoom(List<Message> messages)
+        {
+            foreach (ClientThread client in clients)
+            {
+                client.SendMultiMessage(messages);
+            }
+        }
+
         public void AddClient(ClientThread clientThread)
         {
+            clientThread.JoinRoom(this);
             clients.Add(clientThread);
-            clientThread.SendMessage(new Message(MessageTypes.JoinRoom, JsonConvert.SerializeObject(new RoomModel(this.Name, this.clients.Count))));
+            SendToAllClientsInRoom(new Message(MessageTypes.JoinRoom, JsonConvert.SerializeObject(new RoomModel(this.Name, this.clients.Count))));
 
             if(this.Name.ToLower() != "hub")
             {
@@ -78,32 +90,34 @@ namespace Server
         public void LeaveRoom(ClientThread clientThread)
         {
             server.JoinRoom(clientThread, this, "hub");
+            SendToAllClientsInRoom(new Message(MessageTypes.JoinRoom, JsonConvert.SerializeObject(new RoomModel(this.Name, this.clients.Count))));
         }
 
-        public void SendNewDrawer(ClientModel clientModel)
+        public void NextDrawer()
         {
-            Message message = new Message(MessageTypes.NewDrawer, JsonConvert.SerializeObject(clientModel));
-
-            foreach(ClientThread client in clients)
+            currentDrawer++;
+            if (currentDrawer >= clients.Count)
             {
-                client.SendMessage(message);
+                currentDrawer = 0;
             }
+            Console.WriteLine("New Drawer: " + clients[currentDrawer].Name);
+            this.SendToAllClientsInRoom(new Message(MessageTypes.NewDrawer, JsonConvert.SerializeObject(new ClientModel(clients[currentDrawer].Name))));
         }
 
         public void GuessWord(string word, ClientThread client)
         {
-            this.gameHandler.GuessWord(word, client.Name);
+            bool guessed = this.gameHandler.GuessWord(word, client.Name);  
         }
 
         public void StartGame()
         {
             if(this.clients.Count > 1)
             {
-
+                this.gameHandler.StartGame(clients);
+                this.SendToAllClientsInRoom(new Message(MessageTypes.NewDrawer, JsonConvert.SerializeObject(new ClientModel(clients[0].Name))));
+                this.SendToAllClientsInRoom(new Message(MessageTypes.GuessWord, JsonConvert.SerializeObject(new GuessModel(this.gameHandler.Word))));
+                this.SendToAllClientsInRoom(new Message(MessageTypes.StartGame, JsonConvert.SerializeObject(new GameModel(gameHandler.Word.Length, 1))));
             }
-
-            this.gameHandler.StartGame(clients);
-            this.SendToAllClientsInRoom(new Message(MessageTypes.StartGame, JsonConvert.SerializeObject(new GameModel(gameHandler.Word.Length))));
         }
 
         private void MakeHost(ClientThread clientThread)
