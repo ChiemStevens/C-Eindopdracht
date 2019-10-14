@@ -42,6 +42,11 @@ namespace Client
             mainWindow.SetRoomsizeLabel(roomSize);
         }
 
+        public void ClearCanvas()
+        {
+            mainWindow.ClearCanvas();
+        }
+
         public void SetRoundsLabel(int rounds)
         {
             mainWindow.SetRoundLabel(rounds);

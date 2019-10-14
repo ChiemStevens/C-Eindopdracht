@@ -78,6 +78,9 @@ namespace Server
 
                     string wholePacket = Encoding.Unicode.GetString(buffer);
                     string stringMessage = wholePacket.Replace("\0", "");
+
+                    Console.WriteLine(stringMessage);
+
                     string[] messages = stringMessage.Split(new string[] { Util.END_MESSAGE_KEY }, StringSplitOptions.None);
 
 
@@ -100,6 +103,7 @@ namespace Server
                                     this.LeaveRoom(JsonConvert.DeserializeObject<RoomModel>(message.Data));
                                     break;
                                 case MessageTypes.SendDrawing:
+                                    Console.WriteLine(JsonConvert.SerializeObject(message));
                                     this.room.SendToAllClientsInRoom(message);
                                     break;
                                 case MessageTypes.SendUsername:
@@ -131,6 +135,7 @@ namespace Server
                 }
                 catch (IOException ex)
                 {
+                    Console.WriteLine(ex.Message);
                     Console.WriteLine("Client: {0} disconnected", name);
                     this.StopClientThread();
                     this.room.DisconnectClient(this);

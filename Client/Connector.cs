@@ -14,6 +14,9 @@ namespace Client
     {
         private TcpClient client;
         private NetworkStream stream;
+        private string firstHalfFromBuffer;
+        private string secondHalfFromBuffer;
+        private bool incompleteMessage;
 
         /// <summary>
         /// Makes connection to the draw server and saves the connection in the client and stream variable. 
@@ -100,71 +103,93 @@ namespace Client
             string wholePacket = Encoding.Unicode.GetString(buffer);
             string stringMessage = wholePacket.Replace("\0", "");
             string[] messages = stringMessage.Split(new string[] { Util.END_MESSAGE_KEY }, StringSplitOptions.None);
+
+            int length = messages.Length;
+
+            if (incompleteMessage)
+            {
+                secondHalfFromBuffer = messages[0];
+                messages[0] = firstHalfFromBuffer + secondHalfFromBuffer;
+            }
+
+            if (!messages[messages.Length - 1].Contains(Util.END_MESSAGE_KEY))
+            {
+                length -= 1;
+                firstHalfFromBuffer = messages[messages.Length - 1];
+                incompleteMessage = true;
+            }
             
-            for(int i = 0; i < messages.Length; i++)
+
+            for (int i = 0; i < length; i++)
             {
                 if (messages[i] == "")
                     continue;
 
-                Message message = JsonConvert.DeserializeObject<Message>(messages[i]);
-
-                switch (message.Type)
-                {
-                    case MessageTypes.Inform:
-                        GuessModel guessModel = JsonConvert.DeserializeObject<GuessModel>(message.Data);
-                        DrawHandler.GetInstance().WriteMessage(guessModel.Word);
-                        break;
-                    case MessageTypes.SendDrawing:
-                        DrawPoint drawPoint = JsonConvert.DeserializeObject<DrawPoint>(message.Data);
-                        DrawHandler.GetInstance().DrawLine(drawPoint);
-                        break;
-                    case MessageTypes.NewDrawer:
-                        DrawHandler.GetInstance().CheckDrawer(JsonConvert.DeserializeObject<ClientModel>(message.Data));
-                        break;
-                    case MessageTypes.NewHost:
-                        ClientHandler.GetInstance().SetHost(JsonConvert.DeserializeObject<ClientModel>(message.Data));
-                        break;
-                    case MessageTypes.JoinRoom:
-                        RoomModel room = JsonConvert.DeserializeObject<RoomModel>(message.Data);
-                        ClientHandler.GetInstance().SetRoomname(room.Name);
-                        ClientHandler.GetInstance().SetRoomSize(room.AmountOfPlayers);
-                        break;
-                    case MessageTypes.StartGame:
-                        GameModel gameModel = JsonConvert.DeserializeObject<GameModel>(message.Data);
-                        ClientHandler.GetInstance().SetWordSize(gameModel.LengthOfWord);
-                        ClientHandler.GetInstance().SetRoundLabel(gameModel.CurrentRound);
-                        DrawHandler.GetInstance().HideHostGrid();
-                        break;
-                    case MessageTypes.EndGame:
-                        EndGameModel endGameModel = JsonConvert.DeserializeObject<EndGameModel>(message.Data);
-                        ClientHandler.GetInstance().ShowWinners(endGameModel);
-                        ClientHandler.GetInstance().EndGame();
-                        break;
-                    case MessageTypes.GuessWord:
-                        ClientHandler.GetInstance().SetWord(JsonConvert.DeserializeObject<GuessModel>(message.Data).Word);
-                        break;
-                    case MessageTypes.NewRound:
-                        gameModel = JsonConvert.DeserializeObject<GameModel>(message.Data);
-                        ClientHandler.GetInstance().SetWordSize(gameModel.LengthOfWord);
-                        ClientHandler.GetInstance().SetRoundLabel(gameModel.CurrentRound);
-                        break;
-                    case MessageTypes.UsernameCheck:
-                        bool validName = JsonConvert.DeserializeObject<ClientModel>(message.Data).ValidName;
-                        ClientHandler.GetInstance().CheckUsername(validName);
-                        break;
-                    default:
-                        break;
-                }
+                HandleMessage(messages[i]);
             }
-            
 
             this.ReadMessage();
         }
 
+        private void HandleMessage(string stringMessage)
+        {
+
+            Message message = JsonConvert.DeserializeObject<Message>(stringMessage);
+
+            switch (message.Type)
+            {
+                case MessageTypes.Inform:
+                    GuessModel guessModel = JsonConvert.DeserializeObject<GuessModel>(message.Data);
+                    DrawHandler.GetInstance().WriteMessage(guessModel.Word);
+                    break;
+                case MessageTypes.SendDrawing:
+                    DrawPoint drawPoint = JsonConvert.DeserializeObject<DrawPoint>(message.Data);
+                    DrawHandler.GetInstance().DrawLine(drawPoint);
+                    break;
+                case MessageTypes.NewDrawer:
+                    DrawHandler.GetInstance().CheckDrawer(JsonConvert.DeserializeObject<ClientModel>(message.Data));
+                    break;
+                case MessageTypes.NewHost:
+                    ClientHandler.GetInstance().SetHost(JsonConvert.DeserializeObject<ClientModel>(message.Data));
+                    break;
+                case MessageTypes.JoinRoom:
+                    RoomModel room = JsonConvert.DeserializeObject<RoomModel>(message.Data);
+                    ClientHandler.GetInstance().SetRoomname(room.Name);
+                    ClientHandler.GetInstance().SetRoomSize(room.AmountOfPlayers);
+                    break;
+                case MessageTypes.StartGame:
+                    GameModel gameModel = JsonConvert.DeserializeObject<GameModel>(message.Data);
+                    ClientHandler.GetInstance().SetWordSize(gameModel.LengthOfWord);
+                    ClientHandler.GetInstance().SetRoundLabel(gameModel.CurrentRound);
+                    DrawHandler.GetInstance().HideHostGrid();
+                    break;
+                case MessageTypes.EndGame:
+                    EndGameModel endGameModel = JsonConvert.DeserializeObject<EndGameModel>(message.Data);
+                    ClientHandler.GetInstance().ShowWinners(endGameModel);
+                    ClientHandler.GetInstance().EndGame();
+                    break;
+                case MessageTypes.GuessWord:
+                    ClientHandler.GetInstance().SetWord(JsonConvert.DeserializeObject<GuessModel>(message.Data).Word);
+                    break;
+                case MessageTypes.NewRound:
+                    gameModel = JsonConvert.DeserializeObject<GameModel>(message.Data);
+                    ClientHandler.GetInstance().SetWordSize(gameModel.LengthOfWord);
+                    ClientHandler.GetInstance().SetRoundLabel(gameModel.CurrentRound);
+                    DrawHandler.GetInstance().ClearCanvas();
+                    break;
+                case MessageTypes.UsernameCheck:
+                    bool validName = JsonConvert.DeserializeObject<ClientModel>(message.Data).ValidName;
+                    ClientHandler.GetInstance().CheckUsername(validName);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+
         /// <summary>
-        /// Send a message to the server. Messagebytes is a string converted to a byte array. 
+        /// Send a message to the server.
         /// </summary>
-        /// <param name="messageBytes"></param>
         private void sendMessage(Message message)
         {
             string toSend = JsonConvert.SerializeObject(message) + Util.END_MESSAGE_KEY;

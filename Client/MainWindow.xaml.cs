@@ -101,6 +101,14 @@ namespace Client
             }));
         }
 
+        public void ClearCanvas()
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                paintSurface.Children.Clear();
+            }));
+        }
+
         public void ShowHostGrid()
         {
             Application.Current.Dispatcher.Invoke(new Action(() =>
