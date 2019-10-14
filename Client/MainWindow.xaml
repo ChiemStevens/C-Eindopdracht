@@ -14,6 +14,10 @@
             </Canvas.Background>
         </Canvas>
 
+        <Grid Name="gridNoConnection" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="468,318,460,317" Width="600">
+            <Label Content="No connection with server" Foreground="#FF0000" HorizontalAlignment="Center" FontSize="38" VerticalAlignment="Center" Margin="54,10,50,10" Width="496" Height="80"/>
+        </Grid>
+
         <Grid x:Name="GridWord" Margin="0,0,267,681">
             <Label Name="lblWord" Margin="10,0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="22" />
             <Label Name="lblRounds" FontSize="22" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="34" Width="151"/>
@@ -22,6 +26,7 @@
         <Grid Name="StartGrid">
             <TextBox Name="txtUsername" HorizontalAlignment="Center" TextAlignment="Center" FontSize="18" Height="51" TextWrapping="Wrap" Text="Username" VerticalAlignment="Center" Width="252"/>
             <Button Name="btnEnterGame" Content="Enter game" HorizontalAlignment="Center" Margin="0,110,0,0" VerticalAlignment="Center" Width="116" Height="41" Click="btnEnterGame_Click"/>
+            <Label Name="lblWrongUsername" Content="Username already online" FontSize="22" Foreground="#FF0000" HorizontalAlignment="Left" Margin="638,466,0,0" VerticalAlignment="Top" Height="34" Width="252"/>
         </Grid>
 
         <Grid x:Name="DrawGrid" Margin="0,673,0,0">
@@ -33,7 +38,7 @@
             <Button Background="Orange" Margin="375,0,1083,0" Click="btnColor_Click"/>
             <Button Background="Black" Margin="450,0,1008,0" Click="btnColor_Click"/>
             <Button Background="White" Margin="525,0,933,0" Click="btnColor_Click"/>
-            <ComboBox Name="pencilThickness" HorizontalAlignment="Left" Margin="647,10,0,0" VerticalAlignment="Top" Width="82" Height="42"/>
+            <ComboBox Name="pencilThickness" HorizontalAlignment="Left" Margin="647,10,0,0" VerticalAlignment="Top" Width="82" Height="42" SelectionChanged="pencilThickness_Selected"/>
         </Grid>
 
         <Grid Name="ToolGrid" Margin="1279,0,0,0">
@@ -52,14 +57,14 @@
         </Grid>
 
         <Grid x:Name="winningGrid" HorizontalAlignment="Center" VerticalAlignment="Center" Height="220" Margin="468,262,460,253" Width="600">
-            <Label Name="lblFirst" Content="Winner: " HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="238"/>
-            <Label Name="lblSecond" Content="2nd: " HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top" Width="238"/>
-            <Label Name="lblThid" Content="3th: " HorizontalAlignment="Left" Margin="10,72,0,0" VerticalAlignment="Top" Width="238"/>
-            <Label Name="lblFourth" Content="4th: " HorizontalAlignment="Left" Margin="10,103,0,0" VerticalAlignment="Top" Width="238"/>
-            <Label Name="lblFifth" Content="5th: " HorizontalAlignment="Left" VerticalAlignment="Top" Width="238" Margin="352,10,0,0"/>
-            <Label Name="lblSixth" Content="6th: " HorizontalAlignment="Left" VerticalAlignment="Top" Width="238" Margin="352,41,0,0"/>
-            <Label Name="lblSeventh" Content="7th: " HorizontalAlignment="Left" VerticalAlignment="Top" Width="238" Margin="352,72,0,0"/>
-            <Label Name="lblEigth" Content="8th: " HorizontalAlignment="Left" VerticalAlignment="Top" Width="238" Margin="352,103,0,0"/>
+            <Label Name="lblFirst"  HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="238"/>
+            <Label Name="lblSecond"  HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top" Width="238"/>
+            <Label Name="lblThid" HorizontalAlignment="Left" Margin="10,72,0,0" VerticalAlignment="Top" Width="238"/>
+            <Label Name="lblFourth" HorizontalAlignment="Left" Margin="10,103,0,0" VerticalAlignment="Top" Width="238"/>
+            <Label Name="lblFifth" HorizontalAlignment="Left" VerticalAlignment="Top" Width="238" Margin="352,10,0,0"/>
+            <Label Name="lblSixth" HorizontalAlignment="Left" VerticalAlignment="Top" Width="238" Margin="352,41,0,0"/>
+            <Label Name="lblSeventh"  HorizontalAlignment="Left" VerticalAlignment="Top" Width="238" Margin="352,72,0,0"/>
+            <Label Name="lblEigth" HorizontalAlignment="Left" VerticalAlignment="Top" Width="238" Margin="352,103,0,0"/>
         </Grid>
     </Grid>
 </Window>

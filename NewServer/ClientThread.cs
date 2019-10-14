@@ -111,6 +111,9 @@ namespace Server
                                 case MessageTypes.GuessWord:
                                     this.room.GuessWord(JsonConvert.DeserializeObject<GuessModel>(message.Data).Word, this);
                                     break;
+                                case MessageTypes.UsernameCheck:
+                                    this.room.CheckUsernameServer(JsonConvert.DeserializeObject<ClientModel>(message.Data).Name, this);
+                                    break;
                                 default:
                                     break;
                             }
@@ -128,8 +131,9 @@ namespace Server
                 }
                 catch (IOException ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    Console.WriteLine("Client: {0} disconnected", name);
                     this.StopClientThread();
+                    this.room.DisconnectClient(this);
                     return;
                 }
             }

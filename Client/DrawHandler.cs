@@ -16,12 +16,14 @@ namespace Client
         private bool initialized;
         private bool canDraw;
         private Color color;
+        private double lineThickness;
 
         private DrawHandler()
         {
             canDraw = false;
             initialized = false;
             color = Colors.Black;
+            LineThickness = 1;
         }
 
         public void Initialize(MainWindow mainWindow)
@@ -50,6 +52,22 @@ namespace Client
             if(!this.canDraw)
             {
                 mainWindow.SetWordSizeLabel(wordSize);
+            }
+        }
+
+        public void ShowNoConnection()
+        {
+            if(initialized)
+            {
+                mainWindow.ShowNoConnection();
+            }
+        }
+
+        public void HideNoConnection()
+        {
+            if(initialized)
+            {
+                mainWindow.HideNoConnection();
             }
         }
 
@@ -150,6 +168,22 @@ namespace Client
             mainWindow.ShowWinningGrid();
         }
 
+        public void WrongUsername()
+        {
+            if(initialized)
+            {
+                mainWindow.WrongUsername();
+            }
+        }
+
+        public void SetUsername()
+        {
+            if(initialized)
+            {
+                mainWindow.SetUsername();
+            }
+        }
+
         public static DrawHandler GetInstance()
         {
             if(instance == null)
@@ -162,5 +196,7 @@ namespace Client
         public bool CanDraw { get { return canDraw; } set { canDraw = value; } }
 
         public Color Color { get { return color; } }
+
+        public double LineThickness { get { return lineThickness; } set { lineThickness = value; } }
     }
 }

@@ -20,14 +20,21 @@ namespace Client
         /// </summary>
         public Connector()
         {
-           // client = new System.Net.Sockets.TcpClient("86.82.166.205", 12242); // Create a new connection
-            client = new System.Net.Sockets.TcpClient("127.0.0.1", 12242); // Create a new connection
-            stream = client.GetStream();
+            try
+            {
+                client = new System.Net.Sockets.TcpClient("86.82.166.205", 12242); // Create a new connection
+                //client = new System.Net.Sockets.TcpClient("127.0.0.1", 12242); // Create a new connection
+                stream = client.GetStream();
 
-            Message message = new Message(MessageTypes.Inform, "Hello There!");
-            sendMessage(message);
+                Message message = new Message(MessageTypes.Inform, "Hello There!");
+                sendMessage(message);
 
-            StartReading();
+                StartReading();
+            }
+            catch(Exception ex)
+            {
+                DrawHandler.GetInstance().ShowNoConnection();
+            }
         }
 
         /// <summary>
@@ -53,12 +60,17 @@ namespace Client
 
         public void SendUserName(string username)
         {
-            this.sendMessage(new Message(MessageTypes.SendUsername, JsonConvert.SerializeObject(new ClientModel(username))));
+            this.sendMessage(new Message(MessageTypes.SendUsername, JsonConvert.SerializeObject(new ClientModel(username, true))));
         }
 
         public void SendGuessModel(string guessedWord)
         {
             this.sendMessage(new Message(MessageTypes.GuessWord, JsonConvert.SerializeObject(new GuessModel(guessedWord))));
+        }
+
+        public void SendCheckUsername(string username)
+        {
+            this.sendMessage(new Message(MessageTypes.UsernameCheck, JsonConvert.SerializeObject(new ClientModel(username, false))));
         }
 
         public void StartGame()
@@ -135,6 +147,10 @@ namespace Client
                         gameModel = JsonConvert.DeserializeObject<GameModel>(message.Data);
                         ClientHandler.GetInstance().SetWordSize(gameModel.LengthOfWord);
                         ClientHandler.GetInstance().SetRoundLabel(gameModel.CurrentRound);
+                        break;
+                    case MessageTypes.UsernameCheck:
+                        bool validName = JsonConvert.DeserializeObject<ClientModel>(message.Data).ValidName;
+                        ClientHandler.GetInstance().CheckUsername(validName);
                         break;
                     default:
                         break;

@@ -23,21 +23,26 @@ namespace Client
         {
             InitializeComponent();
 
-            pencilThickness.Items.Add("1");
-            pencilThickness.Items.Add("2");
-            pencilThickness.Items.Add("3");
-            pencilThickness.Items.Add("4");
-            pencilThickness.SelectedItem = "1";
-
-            this.connector = new Connector();
-
-            DrawHandler.GetInstance().Initialize(this);
-
             HideHostGrid();
             ToolGrid.Visibility = Visibility.Hidden;
             DrawGrid.Visibility = Visibility.Hidden;
             GridWord.Visibility = Visibility.Hidden;
             winningGrid.Visibility = Visibility.Hidden;
+            gridNoConnection.Visibility = Visibility.Hidden;
+            lblWrongUsername.Visibility = Visibility.Hidden;
+
+            pencilThickness.Items.Add("1");
+            pencilThickness.Items.Add("2");
+            pencilThickness.Items.Add("3");
+            pencilThickness.Items.Add("4");
+            pencilThickness.Items.Add("5");
+            pencilThickness.Items.Add("6");
+            pencilThickness.Items.Add("7");
+            pencilThickness.Items.Add("8");
+            pencilThickness.SelectedItem = "1";
+
+            DrawHandler.GetInstance().Initialize(this);
+            this.connector = new Connector();
         }
 
         private void Canvas_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -61,7 +66,7 @@ namespace Client
                     brush.Color = DrawHandler.GetInstance().Color;
                     line.Stroke = brush;
 
-                    line.StrokeThickness = 1;
+                    line.StrokeThickness = DrawHandler.GetInstance().LineThickness;
                     line.X1 = currentPoint.X;
                     line.Y1 = currentPoint.Y;
                     line.X2 = e.GetPosition(this).X;
@@ -214,6 +219,42 @@ namespace Client
             }));
         }
 
+        public void ShowNoConnection()
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                gridNoConnection.Visibility = Visibility.Visible;
+                StartGrid.Visibility = Visibility.Hidden;
+            }));
+        }
+
+        public void HideNoConnection()
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                gridNoConnection.Visibility = Visibility.Hidden;
+                StartGrid.Visibility = Visibility.Visible;
+            }));
+        }
+
+        public void SetUsername()
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                connector.SendUserName(txtUsername.Text);
+                StartGrid.Visibility = Visibility.Hidden;
+                ToolGrid.Visibility = Visibility.Visible;
+            }));
+        }
+
+        public void WrongUsername()
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                lblWrongUsername.Visibility = Visibility.Visible;
+            }));
+        }
+
         public void FillWiningGrid(EndGameModel endGameModel)
         {
             int counter = 1;
@@ -304,9 +345,7 @@ namespace Client
         private void btnEnterGame_Click(object sender, RoutedEventArgs e)
         {
             ClientHandler.GetInstance().SetName(txtUsername.Text);
-            connector.SendUserName(txtUsername.Text);
-            StartGrid.Visibility = Visibility.Hidden;
-            ToolGrid.Visibility = Visibility.Visible;
+            this.connector.SendCheckUsername(txtUsername.Text);
         }
 
         private void btnColor_Click(object sender, RoutedEventArgs e)
@@ -317,7 +356,6 @@ namespace Client
 
         private void btn_Leaveroom_Click(object sender, RoutedEventArgs e)
         {
-            
             this.connector.LeaveRoom();
         }
 
@@ -343,6 +381,15 @@ namespace Client
         {
             this.connector.SendGuessModel(chat.Text);
             chat.Text = "";
+        }
+
+        private void pencilThickness_Selected(object sender, RoutedEventArgs e)
+        {
+            int lineThickness = int.Parse(pencilThickness.SelectedIndex.ToString());
+            if (lineThickness == 0)
+                lineThickness = 1;
+
+            DrawHandler.GetInstance().LineThickness = lineThickness;
         }
     }
 }

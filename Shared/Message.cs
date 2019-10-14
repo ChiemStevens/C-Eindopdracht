@@ -39,6 +39,7 @@ namespace Shared
         StartGame,
         GuessWord,
         EndGame,
-        NewRound
+        NewRound,
+        UsernameCheck
     }
 }

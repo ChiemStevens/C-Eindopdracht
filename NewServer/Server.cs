@@ -59,6 +59,19 @@ namespace Server
             return false;
         }
 
+        public bool CheckUsername(string username)
+        {
+            foreach(Room room in rooms)
+            {
+                bool validUsername = room.CheckUsername(username);
+
+                if (!validUsername)
+                    return false;
+            }
+
+            return true;
+        }
+
         public void JoinRoom(ClientThread clientThread, Room currentRoom, string name)
         {
             if(RoomExists(name))

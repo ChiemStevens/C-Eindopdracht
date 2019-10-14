@@ -75,6 +75,18 @@ namespace Client
             DrawHandler.GetInstance().ShowWinners(endGameModel);
         }
 
+        public void CheckUsername(bool validName)
+        {
+            if(validName)
+            {
+                DrawHandler.GetInstance().SetUsername();
+            }
+            else
+            {
+                DrawHandler.GetInstance().WrongUsername();
+            }
+        }
+
         public void LeaveRoom()
         {
             this.isHost = false;
