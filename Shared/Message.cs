@@ -27,7 +27,6 @@ namespace Shared
 
     public enum MessageTypes
     {
-        Authorize,
         Inform,
         SendDrawing,
         JoinRoom,
@@ -40,6 +39,8 @@ namespace Shared
         GuessWord,
         EndGame,
         NewRound,
-        UsernameCheck
+        UsernameCheck,
+        Ping,
+        Pong
     }
 }

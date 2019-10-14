@@ -6,6 +6,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Timers;
 
 namespace Server
 {
@@ -14,12 +15,14 @@ namespace Server
         private TcpClient client;
         private NetworkStream networkStream;
         private Room room;
+        private System.Timers.Timer timer;
 
         private Thread runningThread;
 
         private bool threadRunning;
         private byte[] buffer;
         private string name;
+        private bool recievedResponse;
 
         private const int BYTE_SIZE = 1024;
 
@@ -29,19 +32,51 @@ namespace Server
             this.room = room;
             this.networkStream = client.GetStream();
             this.threadRunning = false;
+            this.recievedResponse = true;
             this.buffer = new byte[BYTE_SIZE];
+
+            SetTimer();
         }
 
         public void StartClientThread()
         {
             this.threadRunning = true;
             this.runningThread = new Thread(Run);
+            this.runningThread.IsBackground = true;
             this.runningThread.Start();
         }
 
         public void StopClientThread()
         {
             this.threadRunning = false;
+            this.runningThread.Abort();
+        }
+
+        private void SetTimer()
+        {
+            // Create a timer with a 10 second interval.
+            timer = new System.Timers.Timer(10000);
+            // Hook up the Elapsed event for the timer. 
+            timer.Elapsed += OnTimedEvent;
+            timer.AutoReset = true;
+            timer.Enabled = true;
+        }
+
+        private void OnTimedEvent(Object source, ElapsedEventArgs e)
+        {
+            if(recievedResponse)
+            {
+                Console.WriteLine("Ping!");
+                recievedResponse = false;
+                this.SendMessage(new Message(MessageTypes.Ping, ""));
+            }
+            else
+            {
+                Console.WriteLine("No response, Disconnect");
+                Console.WriteLine("Client: {0} disconnected", name);
+                this.StopClientThread();
+                this.room.DisconnectClient(this);
+            }
         }
 
         public void SendMultiMessage(List<Message> messages)
@@ -118,6 +153,9 @@ namespace Server
                                 case MessageTypes.UsernameCheck:
                                     this.room.CheckUsernameServer(JsonConvert.DeserializeObject<ClientModel>(message.Data).Name, this);
                                     break;
+                                case MessageTypes.Pong:
+                                    this.recievedResponse = true;
+                                    break;
                                 default:
                                     break;
                             }
@@ -127,18 +165,22 @@ namespace Server
                             Console.WriteLine(ex.Message);
                         }
                     }
-                    
-
 
                     //Clear the buffer
                     buffer = new byte[BYTE_SIZE];
                 }
                 catch (IOException ex)
                 {
+                    this.timer.Stop();
+                    this.timer = null;
                     Console.WriteLine(ex.Message);
                     Console.WriteLine("Client: {0} disconnected", name);
-                    this.StopClientThread();
                     this.room.DisconnectClient(this);
+                    this.StopClientThread();
+                    return;
+                }
+                catch(ThreadAbortException ex)
+                {
                     return;
                 }
             }
@@ -146,9 +188,12 @@ namespace Server
 
         private void LeaveRoom(RoomModel roomModel)
         {
-            if(this.room.Name == roomModel.Name)
+            if(this.room.Name != "hub")
             {
-                this.room.LeaveRoom(this);
+                if (this.room.Name == roomModel.Name)
+                {
+                    this.room.LeaveRoom(this);
+                }
             }
         }
 

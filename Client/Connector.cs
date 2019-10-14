@@ -25,8 +25,8 @@ namespace Client
         {
             try
             {
-                client = new System.Net.Sockets.TcpClient("86.82.166.205", 12242); // Create a new connection
-                //client = new System.Net.Sockets.TcpClient("127.0.0.1", 12242); // Create a new connection
+                //client = new System.Net.Sockets.TcpClient("86.82.166.205", 12242); // Create a new connection
+                client = new System.Net.Sockets.TcpClient("127.0.0.1", 12242); // Create a new connection
                 stream = client.GetStream();
 
                 Message message = new Message(MessageTypes.Inform, "Hello There!");
@@ -86,10 +86,9 @@ namespace Client
         /// </summary>
         private void StartReading()
         {
-            new Thread(() =>
-            {
-                this.ReadMessage();
-            }).Start();
+            Thread t = new Thread(ReadMessage);
+            t.IsBackground = true;
+            t.Start();
         }
 
         /// <summary>
@@ -180,6 +179,9 @@ namespace Client
                 case MessageTypes.UsernameCheck:
                     bool validName = JsonConvert.DeserializeObject<ClientModel>(message.Data).ValidName;
                     ClientHandler.GetInstance().CheckUsername(validName);
+                    break;
+                case MessageTypes.Ping:
+                    this.sendMessage(new Message(MessageTypes.Pong, ""));
                     break;
                 default:
                     break;
