@@ -92,6 +92,14 @@ namespace Client
             }
         }
 
+        public void HideWinners()
+        {
+            if(initialized)
+            {
+                mainWindow.HidewinningGrid();
+            }
+        }
+
         public void CheckDrawer(ClientModel client)
         {
             if(initialized)

@@ -155,11 +155,11 @@ namespace Server
             bool guessed = this.gameHandler.GuessWord(word, client.Name);  
         }
 
-        public void StartGame()
+        public async void StartGame()
         {
             if(this.clients.Count > 1)
             {
-                this.gameHandler.StartGame(clients);
+                await this.gameHandler.StartGame(clients);
                 this.drawer = clients[0];
                 this.SendToAllClientsInRoom(new Message(MessageTypes.NewDrawer, JsonConvert.SerializeObject(new ClientModel(drawer.Name, true))));
                 this.SendToAllClientsInRoom(new Message(MessageTypes.GuessWord, JsonConvert.SerializeObject(new GuessModel(this.gameHandler.Word))));

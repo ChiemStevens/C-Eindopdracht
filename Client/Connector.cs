@@ -161,6 +161,7 @@ namespace Client
                     ClientHandler.GetInstance().SetWordSize(gameModel.LengthOfWord);
                     ClientHandler.GetInstance().SetRoundLabel(gameModel.CurrentRound);
                     DrawHandler.GetInstance().HideHostGrid();
+                    DrawHandler.GetInstance().HideWinners();
                     break;
                 case MessageTypes.EndGame:
                     EndGameModel endGameModel = JsonConvert.DeserializeObject<EndGameModel>(message.Data);

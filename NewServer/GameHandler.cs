@@ -1,8 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using Shared;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Server
 {
@@ -29,16 +32,21 @@ namespace Server
             this.usersGuessedCorrect = new List<string>();
         }
 
-        public void StartGame(List<ClientThread> clients)
+        public async Task StartGame(List<ClientThread> clients)
         {
             if(!this.started)
             {
                 this.started = true;
+                usersAndPoints.Clear();
+                this.currentRoundNumber = 1;
+                this.usersGuessedCorrect = new List<string>();
+
+
                 foreach(ClientThread client in clients)
                 {
                     usersAndPoints.Add(client.Name, 0);
                 }
-                ReadWordsAndChoice();
+                this.word = await ReadWordsAndChoiceAsync();
             }
         }
 
@@ -84,13 +92,13 @@ namespace Server
             return false;
         }
 
-        public void NewRound()
+        public async void NewRound()
         {
             Console.WriteLine("New round");
             //New round
             currentRoundNumber++;
             usersGuessedCorrect.Clear();
-            ReadWordsAndChoice();
+            this.word = await ReadWordsAndChoiceAsync();
             this.gameRoom.NextDrawer();
 
             List<Message> messages = new List<Message>();
@@ -99,11 +107,30 @@ namespace Server
             this.gameRoom.SendToAllClientsInRoom(messages);
         }
 
-        private void ReadWordsAndChoice()
+        /*private void ReadWordsAndChoice()
         {
             string[] lines = System.IO.File.ReadAllLines(@"words.txt");
             word = lines[new Random().Next(0, lines.Length - 1)];
             Console.WriteLine(word);
+        }*/
+
+        private async Task<string> ReadWordsAndChoiceAsync()
+        {
+            string path = Directory.GetCurrentDirectory();
+
+            string sourceFile = path + @"\words.txt";
+
+            List<string> lines = new List<string>();
+            using (StreamReader reader = File.OpenText(sourceFile))
+            {
+                string line = null;
+                while ((line = await reader.ReadLineAsync()) != null)
+                {
+                    lines.Add(line);
+                }
+            }
+
+            return lines[new Random().Next(0, lines.Count)];
         }
 
         public string Word { get { return this.word; } }
