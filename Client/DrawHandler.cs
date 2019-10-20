@@ -8,6 +8,9 @@ using Shared;
 
 namespace Client
 {
+    /// <summary>
+    /// Handles all GUI related tasks. Has an connection with the MainWindow class.
+    /// </summary>
     class DrawHandler
     {
         private static DrawHandler instance;

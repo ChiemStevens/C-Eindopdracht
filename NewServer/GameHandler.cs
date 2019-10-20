@@ -19,6 +19,7 @@ namespace Server
 
         private int maxRounds;
         private Room gameRoom;
+        private Random rnd;
 
         public GameHandler(int maxRounds, Room gameRoom)
         {
@@ -30,8 +31,14 @@ namespace Server
             this.word = "";
             this.usersAndPoints = new Dictionary<string, int>();
             this.usersGuessedCorrect = new List<string>();
+            rnd = new Random();
         }
 
+        /// <summary>
+        /// Starts the game, if it is not already started, otherwise nothing happens.
+        /// </summary>
+        /// <param name="clients"></param>
+        /// <returns></returns>
         public async Task StartGame(List<ClientThread> clients)
         {
             if(!this.started)
@@ -50,6 +57,9 @@ namespace Server
             }
         }
 
+        /// <summary>
+        /// Ends the game, only possible when the game is already started
+        /// </summary>
         public void EndGame()
         {
             if(this.started)
@@ -59,6 +69,12 @@ namespace Server
             }
         }
 
+        /// <summary>
+        /// An attempt to guess the current word. If it is not guessed, it is seen as a chat message and send to all other clients.
+        /// </summary>
+        /// <param name="word"></param>
+        /// <param name="clientName"></param>
+        /// <returns></returns>
         public bool GuessWord(string word, string clientName)
         {
             if(this.word.ToLower() == word.ToLower())
@@ -92,6 +108,9 @@ namespace Server
             return false;
         }
 
+        /// <summary>
+        /// Starts a new round.
+        /// </summary>
         public async void NewRound()
         {
             Console.WriteLine("New round");
@@ -114,6 +133,10 @@ namespace Server
             Console.WriteLine(word);
         }*/
 
+        /// <summary>
+        /// Read all lines from the file and choices a word that will be drawn.
+        /// </summary>
+        /// <returns></returns>
         private async Task<string> ReadWordsAndChoiceAsync()
         {
             string path = Directory.GetCurrentDirectory();
@@ -130,7 +153,7 @@ namespace Server
                 }
             }
 
-            return lines[new Random().Next(0, lines.Count)];
+            return lines[rnd.Next(0, lines.Count)];
         }
 
         public string Word { get { return this.word; } }

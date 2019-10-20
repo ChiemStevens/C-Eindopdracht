@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace Client
 {
+    /// <summary>
+    /// Class that handles all client specific things
+    /// CanDraw, IsHost and communication with the DrawHandler class
+    /// </summary>
     class ClientHandler
     {
         private static ClientHandler instance;

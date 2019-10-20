@@ -50,32 +50,54 @@ namespace Client
             this.sendMessage(new Message(MessageTypes.SendDrawing, JsonConvert.SerializeObject(drawPoint)));
         }
 
+        /// <summary>
+        /// Send the roomnamme that wished to be joined or created to the server.
+        /// </summary>
+        /// <param name="roomname"></param>
         public void SendRoomName(string roomname)
         {
             this.sendMessage(new Message(MessageTypes.JoinRoom, JsonConvert.SerializeObject(new RoomModel(roomname, 0))));
         }
 
+        /// <summary>
+        /// Leave the current room and return to hub
+        /// </summary>
         public void LeaveRoom()
         {
             ClientHandler.GetInstance().LeaveRoom();
             this.sendMessage(new Message(MessageTypes.LeaveRoom, JsonConvert.SerializeObject(new RoomModel(ClientHandler.GetInstance().Roomname, 0))));
         }
 
+        /// <summary>
+        /// Send the desired username to the server. Server will check if username already exists
+        /// </summary>
+        /// <param name="username"></param>
         public void SendUserName(string username)
         {
             this.sendMessage(new Message(MessageTypes.SendUsername, JsonConvert.SerializeObject(new ClientModel(username, true))));
         }
 
+        /// <summary>
+        /// Send a guess attempt to the server. If the word is not guessed it is send as a chat message to the rest of the clients.
+        /// </summary>
+        /// <param name="guessedWord"></param>
         public void SendGuessModel(string guessedWord)
         {
             this.sendMessage(new Message(MessageTypes.GuessWord, JsonConvert.SerializeObject(new GuessModel(guessedWord))));
         }
 
+        /// <summary>
+        /// Check if the username already exists.
+        /// </summary>
+        /// <param name="username"></param>
         public void SendCheckUsername(string username)
         {
             this.sendMessage(new Message(MessageTypes.UsernameCheck, JsonConvert.SerializeObject(new ClientModel(username, false))));
         }
 
+        /// <summary>
+        /// Start a new game, only happens when there are 2 or more people in the room
+        /// </summary>
         public void StartGame()
         {
             this.sendMessage(new Message(MessageTypes.StartGame, ""));
@@ -130,6 +152,10 @@ namespace Client
             this.ReadMessage();
         }
 
+        /// <summary>
+        /// Handle thie incoming message, destination from: ReadMessage();
+        /// </summary>
+        /// <param name="stringMessage"></param>
         private void HandleMessage(string stringMessage)
         {
 

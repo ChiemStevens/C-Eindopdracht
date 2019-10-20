@@ -52,6 +52,10 @@ namespace Server
             this.runningThread.Abort();
         }
 
+        /// <summary>
+        /// This timer is set every 10 seconds, it pings the client if it is still here
+        /// If there is no respone within the next 10 seconds, the client is disconnected
+        /// </summary>
         private void SetTimer()
         {
             // Create a timer with a 10 second interval.
@@ -79,6 +83,10 @@ namespace Server
             }
         }
 
+        /// <summary>
+        /// Method used for sending multiple messages at once.
+        /// </summary>
+        /// <param name="messages"></param>
         public void SendMultiMessage(List<Message> messages)
         {
             string json = "";
@@ -91,6 +99,10 @@ namespace Server
             this.networkStream.Write(messageBytes, 0, messageBytes.Length);
         }
 
+        /// <summary>
+        /// Send a message to the client
+        /// </summary>
+        /// <param name="message"></param>
         public void SendMessage(Message message)
         {
             string toSend = JsonConvert.SerializeObject((message)) + Util.END_MESSAGE_KEY;
@@ -116,6 +128,7 @@ namespace Server
 
                     Console.WriteLine(stringMessage);
 
+                    //Split the messages till the End key. this leaves us with a string array containing all the json messages that can be convert to objects.
                     string[] messages = stringMessage.Split(new string[] { Util.END_MESSAGE_KEY }, StringSplitOptions.None);
 
 
@@ -127,7 +140,6 @@ namespace Server
                                 continue;
 
                             Message message = JsonConvert.DeserializeObject<Message>(messages[i]);
-                            Console.WriteLine(message.Type);
 
                             switch (message.Type)
                             {

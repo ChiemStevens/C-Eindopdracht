@@ -27,6 +27,9 @@ namespace Server
             rooms.Add(hub);
         }
 
+        /// <summary>
+        /// Start the server.
+        /// </summary>
         public void Start()
         {
             while (true)
@@ -38,6 +41,10 @@ namespace Server
             }
         }
 
+        /// <summary>
+        /// Send a message to the whole server
+        /// </summary>
+        /// <param name="message"></param>
         public void SendToWholeServer(Message message)
         {
             foreach(Room room in rooms)
@@ -46,6 +53,11 @@ namespace Server
             }
         }
 
+        /// <summary>
+        /// Check if a room exists
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public bool RoomExists(string name)
         {
             foreach (Room room in rooms)
@@ -59,6 +71,11 @@ namespace Server
             return false;
         }
 
+        /// <summary>
+        /// Check if a username exists
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
         public bool CheckUsername(string username)
         {
             foreach(Room room in rooms)
@@ -72,6 +89,12 @@ namespace Server
             return true;
         }
 
+        /// <summary>
+        /// Makes a clientThread join another room
+        /// </summary>
+        /// <param name="clientThread"></param>
+        /// <param name="currentRoom"></param>
+        /// <param name="name"></param>
         public void JoinRoom(ClientThread clientThread, Room currentRoom, string name)
         {
             if(RoomExists(name))
@@ -89,6 +112,12 @@ namespace Server
             }
         }
 
+        /// <summary>
+        /// Create a new room, only happens if the room does not already exists.
+        /// </summary>
+        /// <param name="clientThread"></param>
+        /// <param name="currentRoom"></param>
+        /// <param name="name"></param>
         public void CreateRoom(ClientThread clientThread, Room currentRoom, string name)
         {
             if(!RoomExists(name))
@@ -101,6 +130,10 @@ namespace Server
             }
         }
 
+        /// <summary>
+        /// Destroy a room, only when the room name is not hub
+        /// </summary>
+        /// <param name="room"></param>
         public void DestroyRoom(Room room)
         {
             if(room.Name.ToLower() != "hub")
